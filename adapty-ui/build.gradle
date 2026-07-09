@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
 }
 
 android {
@@ -36,6 +37,11 @@ android {
         jvmTarget = '11'
     }
     namespace 'com.adapty.ui'
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+        }
+    }
 }
 
 def composeBom = '2024.09.02'
@@ -54,4 +60,17 @@ dependencies {
 
     debugCompileOnly 'androidx.compose.ui:ui-tooling'
     debugCompileOnly 'androidx.compose.ui:ui-test-manifest'
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = 'io.adapty'
+                artifactId = 'android-ui'
+                version = findProperty('ADAPTY_VERSION') ?: '3.17.2'
+            }
+        }
+    }
 }
